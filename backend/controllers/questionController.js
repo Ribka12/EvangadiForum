@@ -1,130 +1,114 @@
-const db = require('../config/db');
+const db = require("../config/db");
+const { StatusCodes } = require("http-status-codes");
 
 // Function to get all questions
 async function getAllQuestions(req, res) {
   try {
-    const [questions] = await db.promise().query(
-      `SELECT q.*, u.username as user_name 
-       FROM questions q 
-       JOIN users u ON q.userid = u.userid 
-       ORDER BY q.created_at DESC`
-    );
+    const sql =
+      "SELECT q.*, u.username FROM questionTable q JOIN userTable u ON q.user_id = u.user_id ORDER BY q.created_at DESC";
 
-    if (questions.length === 0) {
-      return res.status(404).json({
+    const [rows] = await db.execute(sql);
+
+    if (rows.length === 0) {
+      return res.status(StatusCodes.NOT_FOUND).json({
         error: "Not Found",
-        message: "No questions found."
+        message: "No questions found.",
       });
     }
 
-    res.status(200).json({ questions });
+    res.status(StatusCodes.OK).json({ questions: rows });
   } catch (error) {
-    console.error('Error fetching questions:', error);
-    res.status(500).json({
+    console.error("Error fetching questions:", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       error: "Internal Server Error",
-      message: "An unexpected error occurred."
+      message: "An unexpected error occurred.",
     });
   }
 }
 
 // Function to get single question
 async function getSingleQuestion(req, res) {
-  const { question_id } = req.params;
+  const question_id = req.params.question_id;
 
   try {
-    const [questions] = await db.promise().query(
-      `SELECT q.*, u.username as user_name 
-       FROM questions q 
-       JOIN users u ON q.userid = u.userid 
-       WHERE q.questionid = ?`,
-      [question_id]
-    );
+    const sql =
+      "SELECT q.*, u.username FROM questionTable q JOIN userTable u ON q.user_id = u.user_id ORDER BY q.created_at DESC";
 
-    if (questions.length === 0) {
-      return res.status(404).json({
+    const [rows] = await db.execute(sql, [question_id]);
+
+    if (rows.length === 0) {
+      return res.status(StatusCodes.NOT_FOUND).json({
         error: "Not Found",
-        message: "The requested question could not be found."
+        message: "The requested question could not be found.",
       });
     }
 
-    res.status(200).json({ question: questions[0] });
+    res.status(StatusCodes.OK).json({ question: rows[0] });
   } catch (error) {
-    console.error('Error fetching question:', error);
-    res.status(500).json({
+    console.error("Error fetching question:", error);
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       error: "Internal Server Error",
-      message: "An unexpected error occurred."
+      message: "An unexpected error occurred.",
     });
   }
 }
 
-// ============================================
-// TASK #10: POST QUESTION FUNCTION
-// ============================================
+// POST QUESTION FUNCTION
 async function postQuestion(req, res) {
   const { title, description } = req.body;
-  
+
   // Get user ID from auth middleware
-  const userid = req.user?.userid || req.userId;
+  const user_id = req.user?.user_id || req.user_id;
 
   // Validation: Check for required fields
   if (!title || !description) {
-    return res.status(400).json({
+    return res.status(StatusCodes.BAD_REQUEST).json({
       error: "Bad Request",
-      message: "Please provide all required fields"
+      message: "Please provide all required fields",
     });
   }
 
   // Validate title length
   if (title.trim().length < 5) {
-    return res.status(400).json({
+    return res.status(StatusCodes.BAD_REQUEST).json({
       error: "Bad Request",
-      message: "Title must be at least 5 characters long"
+      message: "Title must be at least 5 characters long",
     });
   }
 
   // Validate description length
   if (description.trim().length < 10) {
-    return res.status(400).json({
+    return res.status(StatusCodes.BAD_REQUEST).json({
       error: "Bad Request",
-      message: "Description must be at least 10 characters long"
+      message: "description must be at least 10 characters long",
     });
   }
 
   try {
     // Insert the question into database
-    const [result] = await db.promise().query(
-      `INSERT INTO questions (title, description, userid) 
-       VALUES (?, ?, ?)`,
-      [title.trim(), description.trim(), userid]
-    );
+    const sql =
+      "INSERT INTO questionTable (user_id, title, description) VALUES (?, ?, ?)";
+
+    await db.execute(sql, [user_id, title, description]);
 
     // Success response as per API documentation
-    res.status(201).json({
-      message: "Question created successfully"
+    res.status(StatusCodes.CREATED).json({
+      message: "Question created successfully",
     });
-
   } catch (error) {
-    console.error('Error posting question:', error);
-    
-    // Handle specific database errors
-    if (error.code === 'ER_NO_REFERENCED_ROW_2') {
-      return res.status(400).json({
-        error: "Bad Request",
-        message: "Invalid user ID"
-      });
-    }
+    console.error("Error posting question:", error);
 
     // Generic server error as per API documentation
-    res.status(500).json({
+    res.status(StatusCodes.INTERNAL_SERVER_ERROR).json({
       error: "Internal Server Error",
-      message: "An unexpected error occurred."
+      message: "An unexpected error occurred.",
     });
   }
 }
 
 // Export functions
-module.exports = { 
-  getAllQuestions, 
-  getSingleQuestion, 
-  postQuestion 
+module.exports = {
+  getAllQuestions,
+  getSingleQuestion,
+  postQuestion,
 };
