@@ -1,0 +1,115 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.loginContainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  max-height: 100vh;
+  background: #f8f9fa;
+}
+
+.loginForm {
+  width: 100%;
+  max-width: 400px;
+  background: #ffffff;
+  padding: 30px;
+  border-radius: 8px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+}
+
+.loginTitle {
+  text-align: center;
+  margin-bottom: 24px;
+  font-weight: 600;
+}
+
+.formGroup {
+  margin-bottom: 18px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+.formGroup input {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border-radius: 5px;
+  border: 1px solid #ced4da;
+  outline: none;
+}
+
+.formGroup input:focus {
+  border-color: #0d6efd;
+}
+
+.passwordWrapper {
+  display: flex;
+  align-items: center;
+}
+
+.passwordWrapper input {
+  flex: 1;
+}
+
+.eyeBtn {
+  background: transparent;
+  border: 1px solid #ced4da;
+  border-radius: 5px;
+  padding: 0 12px;
+  cursor: pointer;
+  height: 41px;
+  display: flex;
+  align-items: center;
+}
+
+.eyeBtn svg {
+  font-size: 18px;
+}
+
+.forgotPassword {
+  text-align: right;
+  margin-bottom: 20px;
+}
+
+.forgotPassword a {
+  font-size: 14px;
+  text-decoration: none;
+  color: #0d6efd;
+}
+
+.loginBtn {
+  width: 100%;
+  padding: 10px;
+  background: #0d6efd;
+  border: none;
+  border-radius: 5px;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.loginBtn:hover {
+  background: #0b5ed7;
+}
+
+.registerText {
+  text-align: center;
+  margin-top: 18px;
+  font-size: 14px;
+}
+
+.registerText a {
+  color: #0d6efd;
+  text-decoration: none;
+}
