@@ -62,7 +62,7 @@ async function postQuestion(req, res) {
   const { title, description } = req.body;
 
   // Get user ID from auth middleware
-  const user_id = req.user?.user_id || req.user_id;
+  const user_id = req.user?.user_id 
 
   // Validation: Check for required fields
   if (!title || !description) {
